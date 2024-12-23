@@ -1,0 +1,91 @@
+name: Tracker Scraper
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # Her gün UTC 21:00 (Türkiye saati 00:00)
+  workflow_dispatch:  # Manuel tetikleme için
+  push:
+    paths:
+      - 'scraper.py'
+      - '.github/workflows/tracker_scraper.yml'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
+    
+    - name: Run scraper
+      run: |
+        python scraper.py
+      continue-on-error: true
+    
+    - name: Check for changes
+      id: check_changes
+      run: |
+        git status
+        echo "changes=$(git status --porcelain | wc -l)" >> $GITHUB_OUTPUT
+    
+    - name: Configure Git
+      if: steps.check_changes.outputs.changes > 0
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+    
+    - name: Commit and push changes
+      if: steps.check_changes.outputs.changes > 0
+      run: |
+        git add tracker_data.json
+        git commit -m "🤖 Tracker verisi güncellendi: $(date +'%Y-%m-%d %H:%M:%S')"
+        git push
+    
+    - name: Create issue if scraper fails
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '❌ Scraper Hatası',
+            body: `Scraper ${new Date().toISOString()} tarihinde başarısız oldu.
+            
+            Lütfen aşağıdakileri kontrol edin:
+            1. Site yapısı değişmiş olabilir
+            2. Site erişilebilir durumda olmayabilir
+            3. Anti-bot koruması devreye girmiş olabilir
+            
+            Job run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+          })
+
+    - name: Upload error logs
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: error-logs
+        path: |
+          *.log
+          tracker_data.json
+        retention-days: 7
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
