@@ -34,26 +34,17 @@ jobs:
       run: python scraper.py
       continue-on-error: true
     
-    - name: Git Durumunu Kontrol Et
-      id: degisiklik
-      run: |
-        git add -A
-        git status
-        echo "durum=$(git status --porcelain | wc -l)" >> $GITHUB_OUTPUT
-    
     - name: Git Ayarla
-      if: steps.degisiklik.outputs.durum > 0
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
     
     - name: Değişiklikleri Kaydet
-      if: steps.degisiklik.outputs.durum > 0
       run: |
-        git add tracker_data.json
+        git add tracker_data.json -f
         timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-        git commit -m "🤖 Veri güncellendi: $timestamp"
-        git push origin HEAD:${GITHUB_REF}
+        git commit -m "🤖 Veri güncellendi: $timestamp" || echo "Değişiklik yok ama devam et"
+        git push origin HEAD:${GITHUB_REF} || echo "Push başarısız ama devam et"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
