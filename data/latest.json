@@ -1,0 +1,45 @@
+{
+    "last_updated": "2025-01-31T01:28:42.356049",
+    "trackers": [
+        {
+            "name": "Old Toons World (OTW)",
+            "description": "Old Toons World (OTW) is a Private Torrent Tracker for ANIMATED MOVIES / TV",
+            "categories": [
+                "Video"
+            ],
+            "url": "https://opentrackers.org/old-toons-world/",
+            "status": true,
+            "date": "2024-12-25T19:21:32"
+        },
+        {
+            "name": "SportsCult",
+            "description": "SportsCult is a Private Torrent Tracker for SPORTS",
+            "categories": [
+                "Sports"
+            ],
+            "url": "https://opentrackers.org/sportscult/",
+            "status": true,
+            "date": "2024-12-24T10:36:59"
+        },
+        {
+            "name": "HD-Space (HDS)",
+            "description": "HD-Space (HDS) is a Private Torrent Tracker for HD MOVIES / TV",
+            "categories": [
+                "Video"
+            ],
+            "url": "https://opentrackers.org/hd-space/",
+            "status": true,
+            "date": "2024-12-11T12:25:49"
+        },
+        {
+            "name": "TorrentLeech (TL)",
+            "description": "TorrentLeech (TL) is a Private Torrent Tracker for 0DAY / GENERAL",
+            "categories": [
+                "General"
+            ],
+            "url": "https://opentrackers.org/torrentleech/",
+            "status": true,
+            "date": "2024-12-06T09:36:00"
+        }
+    ]
+}
